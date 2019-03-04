@@ -39,6 +39,8 @@ public class UserServiceTest {
         User testUser = new User();
         testUser.setName("testName");
         testUser.setUsername("testUsername");
+        testUser.setEmail("testEmail");
+        testUser.setPassword("testPassword");
 
         User createdUser = userService.createUser(testUser);
 
