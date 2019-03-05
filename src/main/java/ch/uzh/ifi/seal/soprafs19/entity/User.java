@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs19.entity;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,8 +26,8 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true) 
 	private String username;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+	@Column(nullable = false)
+	private Date bday;
 
 	@Column(nullable = false)
 	private String password;
@@ -61,12 +62,12 @@ public class User implements Serializable {
 		this.username = username;
 	}
 
-	public String getEmail() {
-		return email;
+	public Date getBday() {
+		return bday;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setBday(Date bday) {
+		this.bday = bday;
 	}
 
 	public String getPassword() {

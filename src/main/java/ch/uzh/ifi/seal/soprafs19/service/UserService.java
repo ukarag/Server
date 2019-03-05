@@ -25,15 +25,38 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Iterable<User> getUsers() {
-        return this.userRepository.findAll();
-    }
-
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    public Boolean existsUserById(long id){
+        return this.userRepository.existsUserById(id);
+    }
+
+    public Boolean existsUserByUsername(String username){
+        return this.userRepository.existsUserByUsername(username);
+    }
+
+    public User getUserById(long id){
+        return this.userRepository.findById(id);
+    }
+
+    public User getUserByUsername(String username){
+        return this.userRepository.findByUsername(username);
+    }
+
+    public Iterable<User> getUsers(){
+        return this.userRepository.findAll();
+    }
+
+    public void updateUser(long userId, User user){
+        User updatedUser = this.userRepository.findById(userId);
+        updatedUser.setUsername(user.getUsername());
+        updatedUser.setBday(user.getBday());
+        this.userRepository.save(updatedUser);
     }
 }
