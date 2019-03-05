@@ -47,5 +47,20 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/users/{id}")
+    ResponseEntity<Void> updateUser(@RequestBody User user, @PathVariable("id") long id){
+        var updatedUser = this.service.getUserById(id);
+        if (updatedUser != null){
+            try {
+                this.service.updateUser(id, user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+    }
 
 }
