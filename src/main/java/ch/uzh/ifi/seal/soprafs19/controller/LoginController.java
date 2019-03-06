@@ -27,8 +27,9 @@ public class LoginController {
 
     @PostMapping("/login")
     UserCheck login(@RequestBody User user) {
-
+        // check if username exists check password and username else throw exception
         if (this.userSvc.existsUserByUsername(user.getUsername())){
+            // check if username and password are compatible else throw exception
             if (this.loginSvc.loginPossible(user.getUsername(), user.getPassword())){
                 return new UserCheck(this.loginSvc.login(user));
             } else {
