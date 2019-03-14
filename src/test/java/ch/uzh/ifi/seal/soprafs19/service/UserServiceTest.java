@@ -36,15 +36,92 @@ public class UserServiceTest {
     public void createUser() {
         Assert.assertNull(userRepository.findByUsername("testUsername"));
 
-        User testUser = new User();
-        testUser.setName("testName");
-        testUser.setUsername("testUsername");
-        testUser.setPassword("testPassword");
+        User testUser1 = new User();
+        testUser1.setName("testName1");
+        testUser1.setUsername("testUsername1");
+        testUser1.setPassword("testPassword1");
 
-        User createdUser = userService.createUser(testUser);
+        User createdUser = userService.createUser(testUser1);
 
         Assert.assertNotNull(createdUser.getToken());
-        Assert.assertEquals(createdUser.getStatus(),UserStatus.ONLINE);
+        Assert.assertEquals(createdUser.getStatus(),UserStatus.OFFLINE);
         Assert.assertEquals(createdUser, userRepository.findByToken(createdUser.getToken()));
+    }
+
+
+    @Test
+    public void testLogin(){
+        Assert.assertNull(userRepository.findByUsername("testUsername2"));
+
+        User testUser2 = new User();
+        testUser2.setName("testName2");
+        testUser2.setUsername("testUsername2");
+        testUser2.setPassword("testPassword2");
+
+
+        User createdUser2 = userService.createUser(testUser2);
+        createdUser2.setStatus(UserStatus.ONLINE);
+
+        userService.login(createdUser2);
+
+        Assert.assertEquals(userRepository.findByUsername("testUsername2").getStatus(), UserStatus.ONLINE);
+    }
+
+    @Test
+    public void testLogoutUser(){
+        Assert.assertNull(userRepository.findByUsername("testUsername3"));
+
+        User testUser3 = new User();
+        testUser3.setName("testName3");
+        testUser3.setUsername("testUsername3");
+        testUser3.setPassword("testPassword3");
+
+        User createdUser3 = userService.createUser(testUser3);
+        userService.login(createdUser3);
+        long id3 = createdUser3.getId();
+        userService.logoutUser(id3);
+
+        Assert.assertEquals(userRepository.findByUsername("testUsername3").getStatus(), UserStatus.OFFLINE);
+
+    }
+
+    @Test
+    public void testReplaceUser(){
+        Assert.assertNull(userRepository.findByUsername("testUsername4"));
+
+        User testUser4 = new User();
+        testUser4.setName("testName4");
+        testUser4.setUsername("testUsername4");
+        testUser4.setPassword("testPassword4");
+
+
+        User createdUser4 = userService.createUser(testUser4);
+
+        User appliedUser = new User();
+        appliedUser.setUsername("NewUsername");
+        appliedUser.setBirthday("NewBirthday");
+
+        User testUser4applied = userService.replaceUser(createdUser4.getId(), appliedUser);
+
+        Assert.assertEquals(testUser4applied.getUsername(), "NewUsername");
+        Assert.assertEquals(testUser4applied.getBirthday(), "NewBirthday");
+        Assert.assertEquals(testUser4applied.getPassword(), "testPassword4");
+    }
+
+    @Test
+    public void testGetUser(){
+        Assert.assertNull(userRepository.findByUsername("testUsername5"));
+
+        User testUser5 = new User();
+        testUser5.setUsername("testUsername5");
+        testUser5.setName("testName5");
+        testUser5.setPassword("testPassword5");
+
+        User createdUser5 = userService.createUser(testUser5);
+
+        User recievedUser5 = userService.getUser(createdUser5.getId());
+
+        Assert.assertEquals(recievedUser5.getUsername(), "testUsername5");
+        Assert.assertEquals(recievedUser5.getId(), createdUser5.getId());
     }
 }

@@ -105,11 +105,12 @@ public class User implements Serializable {
 	}
 
 
-	public String getCreationDate() {
-		return creationDate;
-	}
+    public String getCreationDate(){
+        return creationDate;
 
-	public void setCreationDate(){
+    }
+
+	public void setCreationDate(String creationDate){
 		Date now = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		String nowStr = dateFormat.format(now);

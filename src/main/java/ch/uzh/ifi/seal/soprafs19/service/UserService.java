@@ -37,12 +37,17 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
-        newUser.setCreationDate();
-        userRepository.save(newUser);
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
+        User dbUser = userRepository.findByUsername(newUser.getUsername());
+        if (dbUser != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+        } else {
+            newUser.setToken(UUID.randomUUID().toString());
+            newUser.setStatus(UserStatus.OFFLINE);
+            newUser.setCreationDate(newUser.getCreationDate());
+            userRepository.save(newUser);
+            log.debug("Created Information for User: {}", newUser);
+            return newUser;
+        }
     }
 
     public User logout(User user){
@@ -54,8 +59,10 @@ public class UserService {
 
     public User login(User user) {
         User dbUser = userRepository.findByUsername(user.getUsername());
-        if (dbUser.getPassword().equals(user.getPassword())) {
-            user.setStatus(UserStatus.ONLINE);
+        if (dbUser == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } else if (dbUser.getPassword().equals(user.getPassword())){
+            dbUser.setStatus(UserStatus.ONLINE);
             dbUser = userRepository.save(dbUser);
             return dbUser;
         } else {
@@ -63,11 +70,40 @@ public class UserService {
         }
     }
 
+
+    public User logoutUser(long id) {
+        User user = userRepository.findById(id);
+        user.setStatus(UserStatus.OFFLINE);
+        return user;
+    }
+
     public User getUserByToken(String token) {
         User dbUser = userRepository.findByToken(token);
-        if (dbUser == null){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not logged in");
+        if (dbUser == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not logged in");
         }
         return dbUser;
     }
+
+    public User replaceUser (long userId, User user){
+        User isUser = this.userRepository.findByUsername(user.getUsername());
+        if (isUser != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+        } else {
+            User dbUser = getUser(userId);
+            if(dbUser.getUsername() != user.getUsername() && user.getUsername()!=null){
+                dbUser.setUsername(user.getUsername());
+            }
+            if (dbUser.getBirthday() != user.getBirthday() && user.getBirthday() != null){
+                dbUser.setBirthday(user.getBirthday());
+            }
+            userRepository.save(dbUser);
+            return dbUser;
+        }
+    }
+
+    public User findUserByUsername(String username){
+        return this.userRepository.findByUsername(username);
+    }
+
 }
