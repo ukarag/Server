@@ -22,10 +22,6 @@ public class UserController {
         return service.getUsers();
     }
 
-    @GetMapping("/users/me")
-    User me(@RequestHeader("Access-Token") String token) {
-        return service.getUserByToken(token);
-    }
 
     @GetMapping("/users/{userId}")
     ResponseEntity<User> one(@PathVariable("userId") long id) {
